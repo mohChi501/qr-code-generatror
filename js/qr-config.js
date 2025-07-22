@@ -35,6 +35,10 @@ export class alphaDateTime {
  */
 export function formatData(format, data) {
   switch (format) {
+    case "multiline":
+      // No transformation here—handled as raw lines later
+      return data;
+      
     case "special":
       // 4,{data}{alphaTimestamp}
       return `4,${data}${alphaDateTime.createAlphTimestamp()}`;
