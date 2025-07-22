@@ -1,18 +1,9 @@
-// qr-render.js
+// js/qr-render.js
 
 import { sanitizeFilename } from "./utils.js";
 
-/**
- * Renders a single QR code to a canvas.
- * @param {string} data - The content to encode.
- * @param {string} fgColor - Foreground color.
- * @param {string} bgColor - Background color.
- * @param {HTMLImageElement|null} logoImage - Optional logo to center.
- * @param {string} canvasId - ID of target canvas element.
- * @returns {{svg: string, qrObject: object}} - SVG markup and QR object.
- */
 export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCanvas") {
-  const qr = qrcode(0, "H"); // Error correction: High
+  const qr = qrcode(0, "H");
   qr.addData(data);
   qr.make();
 
@@ -36,13 +27,7 @@ export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCa
 
   if (logoImage && logoImage.complete) {
     const logoSize = canvas.width / 4;
-    ctx.drawImage(
-      logoImage,
-      (canvas.width - logoSize) / 2,
-      (canvas.height - logoSize) / 2,
-      logoSize,
-      logoSize
-    );
+    ctx.drawImage(logoImage, (canvas.width - logoSize) / 2, (canvas.height - logoSize) / 2, logoSize, logoSize);
   }
 
   return {
@@ -51,15 +36,6 @@ export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCa
   };
 }
 
-/**
- * Renders multiple QR codes into a container.
- * @param {string[]} inputLines - Array of strings, one per QR.
- * @param {string} fgColor - Foreground color.
- * @param {string} bgColor - Background color.
- * @param {HTMLImageElement|null} logoImage - Optional logo to apply to all.
- * @param {string} containerId - DOM container to render into.
- * @returns {{canvas: HTMLCanvasElement, filename: string}[]} - Array of canvas objects and names.
- */
 export function renderMultipleQRCodes(inputLines, fgColor, bgColor, logoImage, containerId = "qrBatchContainer") {
   const container = document.getElementById(containerId);
   container.innerHTML = "";
@@ -93,13 +69,7 @@ export function renderMultipleQRCodes(inputLines, fgColor, bgColor, logoImage, c
 
     if (logoImage && logoImage.complete) {
       const logoSize = canvas.width / 4;
-      ctx.drawImage(
-        logoImage,
-        (canvas.width - logoSize) / 2,
-        (canvas.height - logoSize) / 2,
-        logoSize,
-        logoSize
-      );
+      ctx.drawImage(logoImage, (canvas.width - logoSize) / 2, (canvas.height - logoSize) / 2, logoSize, logoSize);
     }
 
     const filename = `qr_${index + 1}`;
