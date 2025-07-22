@@ -23,7 +23,8 @@
     <option value="special">Special (Temp QR)</option>  <!-- new -->
   </select><br />
 
-  <input type="text" id="qrInput" placeholder="Enter your data" /><br />
+  <!--<input type="text" id="qrInput" placeholder="Enter your data" /><br />-->
+  <textarea id="qrInput" placeholder="Enter your data" rows="6" style="width:90%; max-width:400px;"></textarea>
 
   <label>Foreground: <input type="color" id="fgColor" value="#000000" /></label>
   <label>Background: <input type="color" id="bgColor" value="#ffffff" /></label><br />
@@ -31,10 +32,10 @@
   <label>Logo Image: <input type="file" id="logoUpload" accept="image/*" /></label><br />
   <img id="logoPreview" src="" alt="" /><br />
 
-  <button id="generateBtn">Generate QR Code</button>
+  <button id="generateBtn">Generate QR Code</button><br />
   <button id="downloadPNG">Download PNG</button>
   <button id="downloadSVG">Download SVG</button>
-  <button id="downloadAllZip">Download All</button><br />
+  <button id="downloadAllZip">Download All</button>
 
   <canvas id="qrCanvas"></canvas>
 
