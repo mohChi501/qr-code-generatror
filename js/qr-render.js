@@ -1,18 +1,18 @@
 // qr-render.js
 
-import { sanitizeFilename } from './utils.js';
+import { sanitizeFilename } from "./utils.js";
 
 /**
  * Renders a single QR code to a canvas.
  * @param {string} data - The content to encode.
  * @param {string} fgColor - Foreground color.
  * @param {string} bgColor - Background color.
- * @param {Image|null} logoImage - Optional logo image.
- * @param {string} canvasId - ID of the target canvas element.
- * @returns {{svg: string, qrObject: object}} - SVG tag and QR code object.
+ * @param {HTMLImageElement|null} logoImage - Optional logo to center.
+ * @param {string} canvasId - ID of target canvas element.
+ * @returns {{svg: string, qrObject: object}} - SVG markup and QR object.
  */
 export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCanvas") {
-  const qr = qrcode(0, "H"); // Error correction level H (30%)
+  const qr = qrcode(0, "H"); // Error correction: High
   qr.addData(data);
   qr.make();
 
@@ -22,11 +22,9 @@ export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCa
   const size = 6;
   canvas.width = canvas.height = count * size;
 
-  // Fill background
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw QR pixels
   for (let r = 0; r < count; r++) {
     for (let c = 0; c < count; c++) {
       if (qr.isDark(r, c)) {
@@ -36,7 +34,6 @@ export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCa
     }
   }
 
-  // Optional logo overlay
   if (logoImage && logoImage.complete) {
     const logoSize = canvas.width / 4;
     ctx.drawImage(
@@ -55,14 +52,13 @@ export function renderQRCode(data, fgColor, bgColor, logoImage, canvasId = "qrCa
 }
 
 /**
- * Renders multiple QR codes into a container div.
- * Each line of input becomes a separate canvas QR code.
- * @param {string[]} inputLines - Array of individual QR data strings.
+ * Renders multiple QR codes into a container.
+ * @param {string[]} inputLines - Array of strings, one per QR.
  * @param {string} fgColor - Foreground color.
  * @param {string} bgColor - Background color.
- * @param {Image|null} logoImage - Optional logo image.
- * @param {string} containerId - ID of container div.
- * @returns {{canvas: HTMLCanvasElement, filename: string}[]} - Array of canvas+filename pairs.
+ * @param {HTMLImageElement|null} logoImage - Optional logo to apply to all.
+ * @param {string} containerId - DOM container to render into.
+ * @returns {{canvas: HTMLCanvasElement, filename: string}[]} - Array of canvas objects and names.
  */
 export function renderMultipleQRCodes(inputLines, fgColor, bgColor, logoImage, containerId = "qrBatchContainer") {
   const container = document.getElementById(containerId);
@@ -83,11 +79,9 @@ export function renderMultipleQRCodes(inputLines, fgColor, bgColor, logoImage, c
     const size = 6;
     canvas.width = canvas.height = count * size;
 
-    // Draw QR background
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw modules
     for (let r = 0; r < count; r++) {
       for (let c = 0; c < count; c++) {
         if (qr.isDark(r, c)) {
@@ -97,7 +91,6 @@ export function renderMultipleQRCodes(inputLines, fgColor, bgColor, logoImage, c
       }
     }
 
-    // Optional logo overlay
     if (logoImage && logoImage.complete) {
       const logoSize = canvas.width / 4;
       ctx.drawImage(
