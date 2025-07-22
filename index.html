@@ -38,16 +38,22 @@
   <button id="downloadAllZip">Download All</button>
 
   <canvas id="qrCanvas"></canvas>
-
-  <button id="scanStart">Start Scanning</button>
-  <button id="scanStop">Stop Scanning</button>
   <div id="qrBatchContainer"></div>
+  
+  <button id="scanStart">Start Scanning</button>
+  <button id="scanStop">Stop Scanning</button>  
   <div id="reader"></div>
 
   <script type="module">
-    const inputBox = document.getElementById("qrInput");
-    const formatSelector = document.getElementById("qrFormat");
+    import { formatData } from "./js/qr-config.js";
+    import { renderQRCode, renderMultipleQRCodes } from "./js/qr-render.js";
+    import { exportToPNG, exportToSVG } from "./js/qr-export.js";
+    import { startScanner, stopScanner } from "./js/qr-scanner.js";
+    import { sanitizeFilename } from "./js/utils.js";
+    import { exportBatchToZip } from "./js/qr-export.js";
     
+    const inputBox = document.getElementById("qrInput");
+    const formatSelector = document.getElementById("qrFormat");    
     const formatPlaceholders = {
       text: "Enter plain text",
       url: "Enter a full URL or domain",
@@ -63,14 +69,6 @@
       const selected = formatSelector.value;
       inputBox.placeholder = formatPlaceholders[selected] || "Enter your data";
     });
-
-    import { formatData } from "./js/qr-config.js";
-    import { renderQRCode } from "./js/qr-render.js";
-    import { renderMultipleQRCodes } from "./js/qr-render.js";
-    import { exportToPNG, exportToSVG } from "./js/qr-export.js";
-    import { startScanner, stopScanner } from "./js/qr-scanner.js";
-    import { sanitizeFilename } from "./js/utils.js";
-    import { exportBatchToZip } from "./js/qr-export.js";
 
     let logoImage = null;
     let lastFormattedText = "";
