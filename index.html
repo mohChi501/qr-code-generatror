@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Advanced QR Code Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.7/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <h2>🛡️ Advanced QR Code Generator</h2>
+
+  <select id="qrFormat">
+    <option value="text">Plain Text</option>
+    <option value="url">URL</option>
+    <option value="email">Email</option>
+    <option value="sms">Phone/SMS</option>
+    <option value="wifi">Wi-Fi Config</option>
+    <option value="vcard">vCard (Contact Info)</option>
+    <option value="rmqr">rMQR (Placeholder)</option>
+  </select><br />
+
+  <input type="text" id="qrInput" placeholder="Enter your data" /><br />
+
+  <label>Foreground: <input type="color" id="fgColor" value="#000000" /></label>
+  <label>Background: <input type="color" id="bgColor" value="#ffffff" /></label><br />
+
+  <label>Logo Image: <input type="file" id="logoUpload" accept="image/*" /></label><br />
+  <img id="logoPreview" src="" alt="" /><br />
+
+  <button id="generateBtn">Generate QR Code</button>
+  <button id="downloadPNG">Download PNG</button>
+  <button id="downloadSVG">Download SVG</button><br />
+
+  <canvas id="qrCanvas"></canvas>
+
+  <button id="scanStart">Start Scanning</button>
+  <button id="scanStop">Stop Scanning</button>
+  <div id="reader"></div>
+
+  <script type="module">
+    import { formatData } from "./js/qr-config.js";
+    import { renderQRCode } from "./js/qr-render.js";
+    import { exportToPNG, exportToSVG } from "./js/qr-export.js";
+    import { startScanner, stopScanner } from "./js/qr-scanner.js";
+    import { sanitizeFilename } from "./js/utils.js";
+
+    let logoImage = null;
+    let lastFormattedText = "";
+    let lastQRObject = null;
+
+    document.getElementById("logoUpload").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        logoImage = new Image();
+        logoImage.src = evt.target.result;
+        document.getElementById("logoPreview").src = logoImage.src;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      const format = document.getElementById("qrFormat").value;
+      const input = document.getElementById("qrInput").value;
+      const fg = document.getElementById("fgColor").value;
+      const bg = document.getElementById("bgColor").value;
+      const formatted = formatData(format, input);
+      lastFormattedText = input;
+
+      if (!formatted) return;
+
+      const { svg, qrObject } = renderQRCode(formatted, fg, bg, logoImage);
+      lastQRObject = qrObject;
+    });
+
+    document.getElementById("downloadPNG").addEventListener("click", () => {
+      exportToPNG("qrCanvas", lastFormattedText);
+    });
+
+    document.getElementById("downloadSVG").addEventListener("click", () => {
+      const fg = document.getElementById("fgColor").value;
+      const bg = document.getElementById("bgColor").value;
+      exportToSVG(lastQRObject, fg, bg, logoImage, lastFormattedText);
+    });
+
+    document.getElementById("scanStart").addEventListener("click", () => {
+      startScanner((decoded) => {
+        alert("✅ Scanned QR: " + decoded);
+      });
+    });
+
+    document.getElementById("scanStop").addEventListener("click", () => {
+      stopScanner();
+    });
+  </script>
+</body>
+</html>
