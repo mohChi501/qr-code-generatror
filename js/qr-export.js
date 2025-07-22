@@ -59,3 +59,4 @@ export function exportToSVG(qr, fgColor, bgColor, logoImage, originalInput, size
   link.href = URL.createObjectURL(blob);
   link.click();
 }
+
