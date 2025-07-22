@@ -104,7 +104,11 @@
     });
 
     document.getElementById("downloadPNG").addEventListener("click", () => {
-      exportToPNG("qrCanvas", lastFormattedText);
+      if (formatSelector.value === "multiline" && lastBatch?.length) {
+        downloadMultiplePNGs(lastBatch);
+      } else {
+        exportToPNG("qrCanvas", lastFormattedText);
+      }
     });
 
     document.getElementById("downloadSVG").addEventListener("click", () => {
