@@ -93,8 +93,14 @@
 
       if (!formatted) return;
 
-      const { svg, qrObject } = renderQRCode(formatted, fg, bg, logoImage);
-      lastQRObject = qrObject;
+      if (format === "multiline") {
+        const lines = input.split("\n").filter(line => line.trim());
+        const rendered = renderMultipleQRCodes(lines, fg, bg, logoImage);
+        lastBatch = rendered; // Store for download
+      } else {
+        const { svg, qrObject } = renderQRCode(formatted, fg, bg, logoImage);
+        lastQRObject = qrObject;
+      }
     });
 
     document.getElementById("downloadPNG").addEventListener("click", () => {
