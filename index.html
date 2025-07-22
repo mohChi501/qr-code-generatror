@@ -98,7 +98,7 @@
 
       if (format === "multiline") {
         const lines = input.split("\n").filter(line => line.trim());
-        const lastBatch = renderMultipleQRCodes(lines, fg, bg, logoImage);// Store for download
+        lastBatch = renderMultipleQRCodes(lines, fg, bg, logoImage);// Store for download
       } else {
         const { svg, qrObject } = renderQRCode(formatted, fg, bg, logoImage);
         lastQRObject = qrObject;
