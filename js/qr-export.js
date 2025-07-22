@@ -48,3 +48,14 @@ export function exportToSVG(qr, fgColor, bgColor, logoImage, originalInput, size
     img.setAttributeNS(null, 'width', logoSize);
     img.setAttributeNS(null, 'height', logoSize);
     img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', logoImage.src);
+    svg.appendChild(img);
+  }
+
+  const serializer = new XMLSerializer();
+  const svgString = serializer.serializeToString(svg);
+  const blob = new Blob([svgString], { type: 'image/svg+xml' });
+  const link = document.createElement('a');
+  link.download = sanitizeFilename(originalInput || 'qr_code') + '.svg';
+  link.href = URL.createObjectURL(blob);
+  link.click();
+}
