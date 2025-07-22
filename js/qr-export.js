@@ -10,6 +10,15 @@ export function exportToPNG(canvasId, filename = 'qr_code') {
   link.click();
 }
 
+export function downloadMultiplePNGs(qrArray) {
+  qrArray.forEach(({ canvas, filename }) => {
+    const link = document.createElement("a");
+    link.download = sanitizeFilename(filename) + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
+
 export function exportToSVG(qr, fgColor, bgColor, logoImage, originalInput, size = 6) {
   const count = qr.getModuleCount();
   const qrSize = count * size;
