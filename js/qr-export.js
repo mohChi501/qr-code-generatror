@@ -19,6 +19,27 @@ export function downloadMultiplePNGs(qrArray) {
   });
 }
 
+export async function exportBatchToZip(qrArray) {
+  if (!qrArray.length) return;
+  const zip = new JSZip();
+
+  for (const { canvas, filename } of qrArray) {
+    const dataURL = canvas.toDataURL("image/png");
+    const binary = atob(dataURL.split(",")[1]);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    zip.file(sanitizeFilename(filename) + ".png", bytes);
+  }
+
+  const blob = await zip.generateAsync({ type: "blob" });
+  const link = document.createElement("a");
+  link.download = "qr_batch.zip";
+  link.href = URL.createObjectURL(blob);
+  link.click();
+}
+
 export function exportToSVG(qr, fgColor, bgColor, logoImage, originalInput, size = 6) {
   const count = qr.getModuleCount();
   const qrSize = count * size;
