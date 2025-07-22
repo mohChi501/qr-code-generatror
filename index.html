@@ -40,6 +40,25 @@
   <div id="reader"></div>
 
   <script type="module">
+    const inputBox = document.getElementById("qrInput");
+    const formatSelector = document.getElementById("qrFormat");
+    
+    const formatPlaceholders = {
+      text: "Enter plain text",
+      url: "Enter a full URL or domain",
+      email: "name@example.com",
+      sms: "Phone number only",
+      wifi: "SSID,password",
+      vcard: "name, phone, email",
+      rmqr: "Unsupported format",
+      special: "Enter plain text"
+    };
+    
+    formatSelector.addEventListener("change", () => {
+      const selected = formatSelector.value;
+      inputBox.placeholder = formatPlaceholders[selected] || "Enter your data";
+    });
+
     import { formatData } from "./js/qr-config.js";
     import { renderQRCode } from "./js/qr-render.js";
     import { exportToPNG, exportToSVG } from "./js/qr-export.js";
