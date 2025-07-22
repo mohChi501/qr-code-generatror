@@ -18,13 +18,12 @@
     <option value="sms">Phone/SMS</option>
     <option value="wifi">Wi-Fi Config</option>
     <option value="vcard">vCard (Contact Info)</option>
-    <option value="rmqr">rMQR (Placeholder)</option>
+    <option value="special">Special (Temp QR)</option>
     <option value="multiline">Multiline (Batch QR Codes)</option>
-    <option value="special">Special (Temp QR)</option>  <!-- new -->
+    <option value="rmqr">rMQR (Placeholder)</option>
   </select><br />
 
-  <!--<input type="text" id="qrInput" placeholder="Enter your data" /><br />-->
-  <textarea id="qrInput" placeholder="Enter your data" rows="6" style="width:90%; max-width:400px;"></textarea><br />
+  <textarea id="qrInput" rows="6" placeholder="Enter your data" style="width:90%; max-width:400px;"></textarea><br />
 
   <label>Foreground: <input type="color" id="fgColor" value="#000000" /></label>
   <label>Background: <input type="color" id="bgColor" value="#ffffff" /></label><br />
@@ -32,28 +31,27 @@
   <label>Logo Image: <input type="file" id="logoUpload" accept="image/*" /></label><br />
   <img id="logoPreview" src="" alt="" /><br />
 
-  <button id="generateBtn">Generate QR Code</button><br />
+  <button id="generateBtn">Generate QR Code</button>
   <button id="downloadPNG">Download PNG</button>
   <button id="downloadSVG">Download SVG</button>
-  <button id="downloadAllZip">Download All</button>
+  <button id="downloadAllZip">Download All</button><br />
 
   <canvas id="qrCanvas"></canvas>
   <div id="qrBatchContainer"></div>
-  
+
   <button id="scanStart">Start Scanning</button>
-  <button id="scanStop">Stop Scanning</button>  
+  <button id="scanStop">Stop Scanning</button>
   <div id="reader"></div>
 
   <script type="module">
     import { formatData } from "./js/qr-config.js";
     import { renderQRCode, renderMultipleQRCodes } from "./js/qr-render.js";
-    import { exportToPNG, exportToSVG } from "./js/qr-export.js";
+    import { exportToPNG, exportToSVG, exportBatchToZip } from "./js/qr-export.js";
     import { startScanner, stopScanner } from "./js/qr-scanner.js";
     import { sanitizeFilename } from "./js/utils.js";
-    import { exportBatchToZip } from "./js/qr-export.js";
-    
+
     const inputBox = document.getElementById("qrInput");
-    const formatSelector = document.getElementById("qrFormat");    
+    const formatSelector = document.getElementById("qrFormat");
     const formatPlaceholders = {
       text: "Enter plain text",
       url: "Enter a full URL or domain",
@@ -62,12 +60,12 @@
       wifi: "SSID,password",
       vcard: "name, phone, email",
       rmqr: "Unsupported format",
-      special: "Enter plain text"
+      special: "Temporary data (any string)",
+      multiline: "One entry per line"
     };
-    
+
     formatSelector.addEventListener("change", () => {
-      const selected = formatSelector.value;
-      inputBox.placeholder = formatPlaceholders[selected] || "Enter your data";
+      inputBox.placeholder = formatPlaceholders[formatSelector.value] || "Enter your data";
     });
 
     let logoImage = null;
@@ -88,8 +86,8 @@
     });
 
     document.getElementById("generateBtn").addEventListener("click", () => {
-      const format = document.getElementById("qrFormat").value;
-      const input = document.getElementById("qrInput").value;
+      const format = formatSelector.value;
+      const input = inputBox.value;
       const fg = document.getElementById("fgColor").value;
       const bg = document.getElementById("bgColor").value;
       const formatted = formatData(format, input);
@@ -99,7 +97,7 @@
 
       if (format === "multiline") {
         const lines = input.split("\n").filter(line => line.trim());
-        const lastBatch = renderMultipleQRCodes(lines, fg, bg, logoImage);// Store for download
+        lastBatch = renderMultipleQRCodes(lines, fg, bg, logoImage);
       } else {
         const { svg, qrObject } = renderQRCode(formatted, fg, bg, logoImage);
         lastQRObject = qrObject;
@@ -107,21 +105,28 @@
     });
 
     document.getElementById("downloadPNG").addEventListener("click", () => {
-      if (formatSelector.value === "multiline" && lastBatch?.length) {
-        downloadMultiplePNGs(lastBatch);
+      if (formatSelector.value === "multiline" && lastBatch.length) {
+        lastBatch.forEach(({ canvas, filename }) => {
+          const link = document.createElement("a");
+          link.download = sanitizeFilename(filename) + ".png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
       } else {
         exportToPNG("qrCanvas", lastFormattedText);
       }
     });
 
     document.getElementById("downloadSVG").addEventListener("click", () => {
-      const fg = document.getElementById("fgColor").value;
-      const bg = document.getElementById("bgColor").value;
-      exportToSVG(lastQRObject, fg, bg, logoImage, lastFormattedText);
+      if (lastQRObject) {
+        const fg = document.getElementById("fgColor").value;
+        const bg = document.getElementById("bgColor").value;
+        exportToSVG(lastQRObject, fg, bg, logoImage, lastFormattedText);
+      }
     });
 
     document.getElementById("downloadAllZip").addEventListener("click", () => {
-      if (formatSelector.value === "multiline" && lastBatch?.length) {
+      if (formatSelector.value === "multiline" && lastBatch.length) {
         exportBatchToZip(lastBatch);
       } else {
         alert("⚠️ No batch QR codes available to zip.");
