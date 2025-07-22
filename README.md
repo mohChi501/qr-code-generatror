@@ -56,14 +56,23 @@ rMQR is included as a placeholder format only
 
 🛠️ Folder Structure
 qr-code-generator/
+
 ├── index.html
+
 ├── style.css
+
 ├── README.md
+
 ├── js/
+
 │   ├── qr-config.js
+
 │   ├── qr-render.js
+
 │   ├── qr-export.js
+
 │   ├── qr-scanner.js
+
 │   ├── utils.js
 🤝 Contributions
 Feel free to fork, improve, or adapt this tool! Suggestions for:
