@@ -73,6 +73,7 @@
     let logoImage = null;
     let lastFormattedText = "";
     let lastQRObject = null;
+    let lastBatch = [];
 
     document.getElementById("logoUpload").addEventListener("change", (e) => {
       const file = e.target.files[0];
@@ -98,7 +99,7 @@
 
       if (format === "multiline") {
         const lines = input.split("\n").filter(line => line.trim());
-        lastBatch = renderMultipleQRCodes(lines, fg, bg, logoImage);// Store for download
+        const lastBatch = renderMultipleQRCodes(lines, fg, bg, logoImage);// Store for download
       } else {
         const { svg, qrObject } = renderQRCode(formatted, fg, bg, logoImage);
         lastQRObject = qrObject;
