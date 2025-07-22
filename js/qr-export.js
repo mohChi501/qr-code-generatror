@@ -1,6 +1,6 @@
 // qr-export.js
 
-import { sanitizeFilename } from './utils.js';
+import { sanitizeFilename } from './js/utils.js';
 
 export function exportToPNG(canvasId, filename = 'qr_code') {
   const canvas = document.getElementById(canvasId);
