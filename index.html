@@ -68,6 +68,7 @@
     import { exportToPNG, exportToSVG } from "./js/qr-export.js";
     import { startScanner, stopScanner } from "./js/qr-scanner.js";
     import { sanitizeFilename } from "./js/utils.js";
+    import { exportBatchToZip } from "./js/qr-export.js";
 
     let logoImage = null;
     let lastFormattedText = "";
@@ -117,6 +118,14 @@
       const fg = document.getElementById("fgColor").value;
       const bg = document.getElementById("bgColor").value;
       exportToSVG(lastQRObject, fg, bg, logoImage, lastFormattedText);
+    });
+
+    document.getElementById("downloadAllZip").addEventListener("click", () => {
+      if (formatSelector.value === "multiline" && lastBatch?.length) {
+        exportBatchToZip(lastBatch);
+      } else {
+        alert("⚠️ No batch QR codes available to zip.");
+      }
     });
 
     document.getElementById("scanStart").addEventListener("click", () => {
